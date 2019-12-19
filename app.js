@@ -24,7 +24,7 @@ app.use(cookieSession({
 app.get("/", async (req, res) => {
   const notes = await Note.find();
   const pageView ={
-    path: req.route.path,
+    path: req.originalUrl,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
@@ -36,7 +36,7 @@ app.get("/", async (req, res) => {
 app.get("/notes/new", async (req, res) => {
   const notes = await Note.find();
   const pageView ={
-    path: req.route.path,
+    path: req.originalUrl,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
@@ -65,7 +65,7 @@ app.get("/notes/:id", async (req, res) => {
   const notes = await Note.find();
   const note = await Note.findById(req.params.id);
   const pageView ={
-    path: req.route.path,
+    path: req.originalUrl,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
@@ -78,7 +78,7 @@ app.get("/notes/:id/edit", async (req, res, next) => {
   const notes = await Note.find();
   const note = await Note.findById(req.params.id);
   const pageView ={
-    path: req.route.path,
+    path: req.originalUrl,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
@@ -90,7 +90,7 @@ app.get("/notes/:id/edit", async (req, res, next) => {
 //suma la cantidad de veces q se entra al path
 app.get("/analytics", async (req, res) =>{
   const pageView ={
-    path: req.route.path,
+    path: req.originalUrl,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
