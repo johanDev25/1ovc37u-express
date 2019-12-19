@@ -24,7 +24,7 @@ app.use(cookieSession({
 app.get("/", async (req, res) => {
   const notes = await Note.find();
   const pageView ={
-    path: req.originalUrl,
+    path: req.route.path,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
@@ -36,7 +36,7 @@ app.get("/", async (req, res) => {
 app.get("/notes/new", async (req, res) => {
   const notes = await Note.find();
   const pageView ={
-    path: req.originalUrl,
+    path: req.route.path,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
@@ -65,7 +65,7 @@ app.get("/notes/:id", async (req, res) => {
   const notes = await Note.find();
   const note = await Note.findById(req.params.id);
   const pageView ={
-    path: req.originalUrl,
+    path: req.route.path,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
@@ -78,13 +78,26 @@ app.get("/notes/:id/edit", async (req, res, next) => {
   const notes = await Note.find();
   const note = await Note.findById(req.params.id);
   const pageView ={
-    path: req.originalUrl,
+    path: req.route.path,
     date: Date.now(),
     userAgent: req.headers['user-agent']
   };
   const page = new PageView(pageView);
   await page.save();
   res.render("edit", { notes: notes, currentNote: note });
+});
+
+//suma la cantidad de veces q se entra al path
+app.get("/analytics", async (req, res) =>{
+  const pageViews = await PageView.aggregate([{ $group: { _id: "$path", count: { $sum: 1 }}}]);
+  const pageView ={
+    path: req.route.path,
+    date: Date.now(),
+    userAgent: req.headers['user-agent']
+  };
+  const page = new PageView(pageView);
+  await page.save();
+  res.render("analytics", {pageViews})
 });
 
 app.patch("/notes/:id", async (req, res) => {
@@ -107,17 +120,6 @@ app.delete("/notes/:id", async (req, res) => {
   await Note.deleteOne({ _id: req.params.id });
   res.status(204).send({});
 });
-//suma la cantidad de veces q se entra al path
-app.get("/analytics", async (req, res) =>{
-  const pageViews = await PageView.aggregate([{ $group: { _id: "$path", count: { $sum: 1 }}}]);
-  const pageView ={
-    path: req.originalUrl,
-    date: Date.now(),
-    userAgent: req.headers['user-agent']
-  };
-  const page = new PageView(pageView);
-  await page.save();
-  res.render("analytics", {pageViews})
-});
+
 
 app.listen(3000, () => console.log("Listening on port 3000 ..."));
