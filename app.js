@@ -109,7 +109,14 @@ app.delete("/notes/:id", async (req, res) => {
 });
 //suma la cantidad de veces q se entra al path
 app.get("/analytics", async (req, res) =>{
-  const pageViews = await PageView.aggregate([{ $group: { _id: "$path", count: { $sum: 1 }}}])
+  const pageViews = await PageView.aggregate([{ $group: { _id: "$path", count: { $sum: 1 }}}]);
+  const pageView ={
+    path: req.originalUrl,
+    date: Date.now(),
+    userAgent: req.headers['user-agent']
+  };
+  const page = new PageView(pageView);
+  await page.save();
   res.render("analytics", {pageViews})
 });
 
