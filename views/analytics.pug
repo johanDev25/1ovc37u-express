@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  table
+    thead
+      tr
+        th Path
+        th visits
+    tbody
+      each pageView in pageViews
+        tr
+          td= pageView._id
+          td= pageView.count
