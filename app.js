@@ -89,7 +89,6 @@ app.get("/notes/:id/edit", async (req, res, next) => {
 
 //suma la cantidad de veces q se entra al path
 app.get("/analytics", async (req, res) =>{
-  const pageViews = await PageView.aggregate([{ $group: { _id: "$path", count: { $sum: 1 }}}]);
   const pageView ={
     path: req.route.path,
     date: Date.now(),
@@ -97,6 +96,7 @@ app.get("/analytics", async (req, res) =>{
   };
   const page = new PageView(pageView);
   await page.save();
+  const pageViews = await PageView.aggregate([{ $group: { _id: "$path", count: { $sum: 1 }}}]);
   res.render("analytics", {pageViews})
 });
 
